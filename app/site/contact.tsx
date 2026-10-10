@@ -6,6 +6,7 @@ import { motion, useScroll, useTransform, type MotionValue } from "motion/react"
 import skyDay from "@/public/sky-day.jpg";
 import skyNight from "@/public/sky-night.jpg";
 import { NotifyForm } from "../notify-form";
+import { CONTACT_EMAIL } from "../actions";
 import { useT } from "../i18n";
 import { Brand, Wordmark } from "../wordmark";
 import { ease, fadeUp, group } from "./reveal";
@@ -182,7 +183,13 @@ export function Footer() {
   const columns = [
     { title: t.platform, links: t.platformLinks.map((label) => ({ label, href: platformHref })) },
     { title: t.company, links: t.companyLinks.map((label, i) => ({ label, href: companyHrefs[i] })) },
-    { title: t.contact, links: t.contactLinks.map((label) => ({ label, href: "#contact" })) },
+    {
+      title: t.contact,
+      links: [
+        { label: CONTACT_EMAIL, href: `mailto:${CONTACT_EMAIL}`, email: true },
+        ...t.contactLinks.map((label) => ({ label, href: "#contact" })),
+      ],
+    },
   ];
 
   return (
@@ -212,9 +219,26 @@ export function Footer() {
               <ul className="mt-5 space-y-3">
                 {col.links.map((l) => (
                   <li key={l.label}>
-                    <a href={l.href} className="text-[13px] text-ink/55 transition-colors duration-300 hover:text-accent">
-                      <Brand text={l.label} />
-                    </a>
+                    {"email" in l ? (
+                      <a
+                        href={l.href}
+                        className="inline-flex items-start gap-2 text-[13px] font-medium text-accent transition-colors duration-300 hover:text-ink"
+                      >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} className="mt-0.5 size-4 shrink-0" aria-hidden>
+                          <rect x="3" y="5" width="18" height="14" rx="2" />
+                          <path d="M3.5 6.5l8.5 6 8.5-6" />
+                        </svg>
+                        {/* Wrap only after the @, never mid-word */}
+                        <span>
+                          {l.label.split("@")[0]}@<wbr />
+                          <span className="whitespace-nowrap">{l.label.split("@")[1]}</span>
+                        </span>
+                      </a>
+                    ) : (
+                      <a href={l.href} className="text-[13px] text-ink/55 transition-colors duration-300 hover:text-accent">
+                        <Brand text={l.label} />
+                      </a>
+                    )}
                   </li>
                 ))}
               </ul>

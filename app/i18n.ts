@@ -22,6 +22,8 @@ export type ScreenId =
 
 type TourItem = {
   screen: ScreenId;
+  /** Short label for the screen's tab; defaults to the last part of `module`. */
+  tag?: string;
   /** Index into `tour.stages`. */
   stage: number;
   module: string;
@@ -38,7 +40,7 @@ const en = {
     toDark: "Switch to dark mode",
   },
   nav: {
-    links: ["Platform", "Why NetPlus", "Data", "Modules", "Roles"],
+    links: ["Platform", "Why NetPlus", "Vision", "Modules", "Roles"],
     cta: "Early access",
     openMenu: "Open menu",
     closeMenu: "Close menu",
@@ -80,6 +82,7 @@ const en = {
     confidential: "Your information remains confidential",
     success: "Thank you — we'll be in touch soon.",
     invalid: "Please enter a valid email address.",
+    failed: "Something went wrong — please try again or write to contact@netplus-software.com.",
   },
   intro: {
     eyebrow: "The operator's",
@@ -122,22 +125,6 @@ const en = {
     worldB: "NetPlus also manages the right to fly it.",
     p1: "A change in CAMO, crew or dispatch propagates to every view that depends on it: timeline, dashboard, dispatch file and alerts. Every figure on screen comes from a versioned reference, a timestamped entry or a deterministic engine.",
     p2: "And when data is missing, NetPlus says so. No weather, no NOTAM coverage: the file says \"not assessed\" and asks for a check — it never assumes a gap is fine.",
-  },
-  data: {
-    eyebrow: "Built-in aviation data",
-    title: ["Reference data", "an OCC can defend."],
-    body: "Air services agreements, an Airport Directory with its suppliers, AIRAC navigation data, aircraft performance and operator codes — built into NetPlus, versioned and traced to their source.",
-    stats: [
-      { value: 3924, label: "Air services agreements on file" },
-      { value: 193, label: "States covered" },
-      { value: 9583, label: "Airports with ICAO / IATA reference data" },
-      { value: 10678, label: "Suppliers in the Airport Directory" },
-      { value: 121908, label: "Navigation points per AIRAC cycle" },
-      { value: 340, label: "Aircraft types with performance" },
-    ],
-    screenAlt: "NetPlus Airports Data page for Dubai International (OMDB)",
-    caption: "Airports Data — one page per aerodrome: timezone, operating hours, fuel, slots, security level, fire category, services on site, contacts, frequencies and runways.",
-    note: "Figures read from the application: air services agreements database of 14 Aug 2026, AIRAC cycle 2609.",
   },
   learnMore: "Learn more",
   vision: {
@@ -318,6 +305,7 @@ const en = {
       {
         screen: "camo-manager",
         stage: 4,
+        tag: "CAMO",
         module: "CAMO · Tech log · MEL",
         title: ["The authority", "on aircraft status."],
         text: "When the CAMO declares a tail AOG or not airworthy, the timeline, dispatch, IROPS and VIGIL know at once.",
@@ -331,6 +319,7 @@ const en = {
       {
         screen: "sms",
         stage: 4,
+        tag: "SMS",
         module: "SMS · ICAO Annex 19 · ERP",
         title: ["A safety system built", "into every module."],
         text: "The SMS reads CAMO, tech log, crew, training, roster, dispatch and flight following, and its risk engine scores every flight.",
@@ -395,7 +384,7 @@ const fr: Dict = {
     toDark: "Passer en mode sombre",
   },
   nav: {
-    links: ["Plateforme", "Pourquoi NetPlus", "Données", "Modules", "Métiers"],
+    links: ["Plateforme", "Pourquoi NetPlus", "Vision", "Modules", "Métiers"],
     cta: "Accès anticipé",
     openMenu: "Ouvrir le menu",
     closeMenu: "Fermer le menu",
@@ -436,6 +425,7 @@ const fr: Dict = {
     confidential: "Vos informations restent confidentielles",
     success: "Merci — nous revenons vers vous très bientôt.",
     invalid: "Veuillez saisir une adresse e-mail valide.",
+    failed: "Une erreur est survenue — réessayez ou écrivez à contact@netplus-software.com.",
   },
   intro: {
     eyebrow: "Le cockpit numérique",
@@ -478,22 +468,6 @@ const fr: Dict = {
     worldB: "NetPlus gère aussi le droit de le faire voler.",
     p1: "Une modification en CAMO, équipages ou dispatch se propage à toutes les vues qui en dépendent : chronologie, tableau de bord, dossier de vol et alertes. Chaque valeur affichée provient d'une référence versionnée, d'une saisie horodatée ou d'un moteur déterministe.",
     p2: "Et quand une donnée manque, NetPlus le dit. Pas de météo, pas de couverture NOTAM : le dossier indique « non évalué » et demande une vérification — il ne suppose jamais qu'un manque est sans conséquence.",
-  },
-  data: {
-    eyebrow: "Données aéronautiques intégrées",
-    title: ["Des données de référence", "qu'un OCC peut défendre."],
-    body: "Accords de services aériens, un annuaire des aéroports et de leurs fournisseurs, données de navigation AIRAC, performances avions et codes exploitants — intégrés à NetPlus, versionnés et tracés jusqu'à leur source.",
-    stats: [
-      { value: 3924, label: "Accords de services aériens enregistrés" },
-      { value: 193, label: "États couverts" },
-      { value: 9583, label: "Aéroports avec données de référence OACI / IATA" },
-      { value: 10678, label: "Fournisseurs dans l'annuaire des aéroports" },
-      { value: 121908, label: "Points de navigation par cycle AIRAC" },
-      { value: 340, label: "Types d'avions avec performances" },
-    ],
-    screenAlt: "Fiche Airports Data de NetPlus pour Dubaï International (OMDB)",
-    caption: "Airports Data — une page par aérodrome : fuseau horaire, horaires d'ouverture, carburant, créneaux, niveau de sûreté, catégorie incendie, services sur place, contacts, fréquences et pistes.",
-    note: "Chiffres relevés dans l'application : base des accords de services aériens du 14 août 2026, cycle AIRAC 2609.",
   },
   learnMore: "En savoir plus",
   vision: {
@@ -674,6 +648,7 @@ const fr: Dict = {
       {
         screen: "camo-manager",
         stage: 4,
+        tag: "CAMO",
         module: "CAMO · Tech log · MEL",
         title: ["L'autorité sur", "l'état des avions."],
         text: "Quand la CAMO déclare un avion AOG ou non navigable, la chronologie, le dispatch, l'IROPS et VIGIL le savent immédiatement.",
@@ -687,7 +662,8 @@ const fr: Dict = {
       {
         screen: "sms",
         stage: 4,
-        module: "SGS · Annexe 19 OACI · ERP",
+        tag: "SMS",
+        module: "SMS · Annexe 19 OACI · ERP",
         title: ["Un système de sécurité intégré", "à chaque module."],
         text: "Le SGS lit la CAMO, le tech log, les équipages, la formation, le planning, le dispatch et le suivi des vols, et son moteur de risque évalue chaque vol.",
         bullets: [

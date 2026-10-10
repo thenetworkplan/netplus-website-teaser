@@ -1,10 +1,11 @@
 "use client";
 
 import { useActionState } from "react";
-import { subscribe, type NotifyState } from "./actions";
+import { sendEarlyAccess, type NotifyState } from "./actions";
 import { useT } from "./i18n";
+import { useLang } from "./prefs";
 
-const initialState: NotifyState = { status: "idle", message: "" };
+const initialState: NotifyState = { status: "idle" };
 
 export function NotifyForm({
   id = "email",
@@ -13,8 +14,9 @@ export function NotifyForm({
   id?: string;
   align?: "center" | "start";
 }) {
-  const [state, formAction, pending] = useActionState(subscribe, initialState);
+  const [state, formAction, pending] = useActionState((_prev: NotifyState, formData: FormData) => sendEarlyAccess(formData), initialState);
   const t = useT().form;
+  const lang = useLang();
 
   return (
     <div className={`flex w-full flex-col gap-3 ${align === "center" ? "items-center" : "items-start"}`}>
@@ -26,6 +28,10 @@ export function NotifyForm({
           {t.lead}
         </span>
         <span className="hidden h-6 w-px bg-white/20 sm:block" aria-hidden />
+        <input type="hidden" name="source" value={id} />
+        <input type="hidden" name="lang" value={lang} />
+        {/* Honeypot: hidden from people, tempting for spam bots */}
+        <input type="text" name="_honey" tabIndex={-1} autoComplete="off" aria-hidden className="hidden" />
         <label htmlFor={id} className="sr-only">
           {t.label}
         </label>
@@ -78,7 +84,7 @@ export function NotifyForm({
             {t.confidential}
           </>
         ) : (
-          state.status === "error" ? t.invalid : t.success
+          state.status === "error" ? (state.reason === "failed" ? t.failed : t.invalid) : t.success
         )}
       </p>
     </div>

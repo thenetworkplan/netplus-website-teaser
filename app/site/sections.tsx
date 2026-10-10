@@ -1,11 +1,10 @@
 "use client";
 
 import Image, { type StaticImageData } from "next/image";
-import { useRef, useState, type ComponentType, type SVGProps } from "react";
-import { AnimatePresence, motion, MotionConfig, useScroll, useTransform } from "motion/react";
+import { useEffect, useRef, useState, type ComponentType, type SVGProps } from "react";
+import { AnimatePresence, motion, MotionConfig, useInView, useScroll, useTransform } from "motion/react";
 import logo from "@/public/logo.png";
 import occDashboard from "@/public/screens/occ-dashboard.jpg";
-import airportsData from "@/public/screens/airports-data.jpg";
 import feasibility from "@/public/screens/feasibility.jpg";
 import flightAnalysis from "@/public/screens/flight-analysis.jpg";
 import fuelStop from "@/public/screens/fuel-stop.jpg";
@@ -78,7 +77,6 @@ export function Sections() {
       <div className="relative overflow-x-clip bg-page text-ink">
         <Intro />
         <Expertise />
-        <DataSection />
         <Vision />
         <Tour />
         <Roles />
@@ -248,64 +246,6 @@ function Expertise() {
 }
 
 /* ------------------------------------------------------------------ */
-/* Data: built-in aviation reference data, with live counters          */
-/* ------------------------------------------------------------------ */
-
-function DataSection() {
-  const t = useT().data;
-  return (
-    <section id="data" className="relative scroll-mt-24 pb-28 lg:pb-36">
-      <Glow className="-left-40 top-20" />
-      <div className={`${container} grid items-center gap-14 lg:grid-cols-[1fr_1.15fr] lg:gap-16`}>
-        <div>
-          <Reveal>
-            <p className="font-display text-xs font-semibold uppercase tracking-[0.3em] text-accent">{t.eyebrow}</p>
-            <h2 className="mt-4 text-4xl leading-tight sm:text-5xl">
-              <span className="font-display block font-medium text-ink">{t.title[0]}</span>
-              <span className="font-serif block italic text-gold-gradient">{t.title[1]}</span>
-            </h2>
-            <p className="mt-6 max-w-md text-sm leading-relaxed text-ink/60">
-              <Brand text={t.body} />
-            </p>
-          </Reveal>
-          <motion.dl
-            className="mt-10 grid grid-cols-2 gap-x-6 gap-y-8 border-t border-ink/10 pt-8 sm:grid-cols-3"
-            variants={group(0.08)}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true, amount: 0.3 }}
-          >
-            {t.stats.map(({ value, label }) => (
-              <motion.div key={label} variants={fadeUp}>
-                <dt className="sr-only">{label}</dt>
-                <dd className="font-display text-gold-gradient text-3xl font-semibold tracking-tight sm:text-[2rem]">
-                  <Counter to={value} />
-                </dd>
-                <dd className="mt-1 text-[12px] leading-snug text-ink/55">{label}</dd>
-              </motion.div>
-            ))}
-          </motion.dl>
-        </div>
-
-        <Reveal x={40} y={0}>
-          <figure>
-            <motion.div
-              whileHover={{ y: -6 }}
-              transition={{ duration: 0.4, ease }}
-              className="overflow-hidden rounded-2xl border border-gold/25 bg-[#0b1830] shadow-[0_40px_100px_-40px_rgba(201,163,92,0.45)]"
-            >
-              <Image src={airportsData} alt={t.screenAlt} placeholder="blur" sizes="(max-width: 1024px) 100vw, 620px" className="h-auto w-full" />
-            </motion.div>
-            <figcaption className="mt-4 text-[13px] leading-relaxed text-ink/55">{t.caption}</figcaption>
-          </figure>
-        </Reveal>
-      </div>
-      <p className={`${container} mt-10 font-mono text-[10px] tracking-wide text-ink/35`}>{t.note}</p>
-    </section>
-  );
-}
-
-/* ------------------------------------------------------------------ */
 /* Vision: scroll-lit statement, rising horizon, four pillars          */
 /* ------------------------------------------------------------------ */
 
@@ -320,7 +260,7 @@ function Vision() {
   const arc = useTransform(scrollYProgress, [0.2, 0.55], [0, 1]);
 
   return (
-    <section id="vision" className="relative scroll-mt-24 pt-4 lg:pt-8">
+    <section id="vision" className="relative scroll-mt-24 pt-20 lg:pt-28">
       <div className={container}>
         {/* key: restart the word-by-word reveal cleanly when the language changes */}
         <ScrollWords
@@ -391,6 +331,9 @@ function Vision() {
 /* Tour: one flight from request to closure, real application screens  */
 /* ------------------------------------------------------------------ */
 
+/** Time each screen stays up before the tour moves on by itself. */
+const AUTOPLAY_MS = 5000;
+
 function Tour() {
   const t = useT().tour;
   const [index, setIndex] = useState(0);
@@ -398,10 +341,23 @@ function Tour() {
   const item = items[index];
   const stageItems = items.map((it, i) => ({ ...it, i })).filter((it) => it.stage === item.stage);
   const go = (i: number) => setIndex((i + items.length) % items.length);
+  const [paused, setPaused] = useState(false);
+  const section = useRef<HTMLElement>(null);
+  const inView = useInView(section, { amount: 0.35 });
+  const autoplay = inView && !paused;
+
+  // Play the whole tour on its own — every screen of every stage, Request to Close, then loop —
+  // while the section is on screen and the visitor isn't hovering it.
+  useEffect(() => {
+    if (!autoplay) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const id = setTimeout(() => setIndex((i) => (i + 1) % items.length), AUTOPLAY_MS);
+    return () => clearTimeout(id);
+  }, [autoplay, index, items.length]);
   const pad = (n: number) => String(n).padStart(2, "0");
 
   return (
-    <section id="modules" className="relative scroll-mt-24 py-28 lg:py-36">
+    <section ref={section} id="modules" className="relative scroll-mt-24 py-28 lg:py-36">
       <Glow className="left-1/2 top-20 -translate-x-1/2" />
       <div className={container}>
         <Reveal className="mx-auto max-w-2xl text-center">
@@ -445,6 +401,18 @@ function Tour() {
                     >
                       {stage}
                     </span>
+                    {/* Time left on the current screen */}
+                    <span aria-hidden className="h-0.5 w-12 overflow-hidden rounded-full bg-gold/15">
+                      {active && autoplay && (
+                        <motion.span
+                          key={index}
+                          className="block h-full bg-gold"
+                          initial={{ width: "0%" }}
+                          animate={{ width: "100%" }}
+                          transition={{ duration: AUTOPLAY_MS / 1000, ease: "linear" }}
+                        />
+                      )}
+                    </span>
                   </button>
                 </li>
               );
@@ -452,7 +420,11 @@ function Tour() {
           </ol>
         </Reveal>
 
-        <div className="mt-12 grid items-start gap-10 lg:grid-cols-[1.6fr_1fr] lg:gap-12">
+        <div
+          className="mt-12 grid items-start gap-10 lg:grid-cols-[1.6fr_1fr] lg:gap-12"
+          onMouseEnter={() => setPaused(true)}
+          onMouseLeave={() => setPaused(false)}
+        >
           {/* Screen */}
           <div className="relative">
             <div className="relative aspect-[16/10]">
@@ -497,13 +469,24 @@ function Tour() {
                     key={it.screen}
                     type="button"
                     onClick={() => setIndex(it.i)}
-                    className={`font-display rounded-full border px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] transition-colors ${
+                    className={`font-display relative overflow-hidden rounded-full border px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] transition-colors ${
                       it.i === index
                         ? "border-gold bg-gold/15 text-accent"
                         : "border-ink/15 text-ink/55 hover:border-gold/60 hover:text-ink"
                     }`}
                   >
-                    {it.module.split(" · ").slice(-1)[0]}
+                    {/* Fills while an autoplay stage waits to move to the next screen */}
+                    {autoplay && it.i === index && (
+                      <motion.span
+                        key={index}
+                        aria-hidden
+                        className="absolute inset-y-0 left-0 bg-gold/20"
+                        initial={{ width: "0%" }}
+                        animate={{ width: "100%" }}
+                        transition={{ duration: AUTOPLAY_MS / 1000, ease: "linear" }}
+                      />
+                    )}
+                    <span className="relative">{it.tag ?? it.module.split(" · ").slice(-1)[0]}</span>
                   </button>
                 ))}
               </div>

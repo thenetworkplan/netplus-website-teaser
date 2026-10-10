@@ -14,9 +14,9 @@ function subscribe(listener: () => void) {
 }
 const emit = () => listeners.forEach((l) => l());
 
-function save(key: string, value: string) {
+function save(key: string, value: string, storage: "local" | "session" = "local") {
   try {
-    localStorage.setItem(key, value);
+    (storage === "session" ? sessionStorage : localStorage).setItem(key, value);
   } catch {
     // Storage can be unavailable (private mode); the choice still applies to this visit.
   }
@@ -36,7 +36,8 @@ export function useTheme(): Theme {
 
 export function setLang(lang: Lang) {
   document.documentElement.lang = lang;
-  save("np-lang", lang);
+  // This tab only: the next visit opens in the browser's language again.
+  save("np-lang", lang, "session");
   emit();
 }
 
