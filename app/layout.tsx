@@ -22,9 +22,9 @@ const instrumentSerif = Instrument_Serif({
 });
 
 export const metadata: Metadata = {
-  title: "NetPlus — Aviation Operations Platform",
+  title: "NetPlus — Smarter Aviation Solutions",
   description:
-    "An integrated platform combining aviation expertise and artificial intelligence to connect people, data and operations. Coming soon.",
+    "NetPlus is an operations control platform for airlines and business-aviation operators — from the commercial request to the closure of every flight, in one application. Coming soon.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

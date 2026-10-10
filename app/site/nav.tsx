@@ -8,7 +8,7 @@ import { ease } from "./reveal";
 import { Controls } from "./controls";
 import { Close, Menu } from "./icons";
 
-const hrefs = ["#platform", "#why", "#vision", "#modules", "#roles"];
+const hrefs = ["#platform", "#why", "#data", "#modules", "#roles"];
 
 /** Scroll progress line plus a floating nav that appears once the hero is behind you. */
 export function SiteNav() {

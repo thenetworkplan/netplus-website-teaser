@@ -82,12 +82,8 @@ const modules: { icon: ReactNode }[] = [
   {
     icon: (
       <svg {...iconProps}>
-        <circle cx="12" cy="12" r="2.4" />
-        <circle cx="5" cy="5" r="1.8" />
-        <circle cx="19" cy="5" r="1.8" />
-        <circle cx="5" cy="19" r="1.8" />
-        <circle cx="19" cy="19" r="1.8" />
-        <path d="M6.3 6.3l4 4M17.7 6.3l-4 4M6.3 17.7l4-4M17.7 17.7l-4-4" />
+        <path d="M12 2.8l7.5 2.8v5.6c0 4.6-3.1 8.6-7.5 10-4.4-1.4-7.5-5.4-7.5-10V5.6z" />
+        <path d="M8.8 12l2.2 2.2 4.3-4.4" />
       </svg>
     ),
   },

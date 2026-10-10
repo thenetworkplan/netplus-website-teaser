@@ -1,10 +1,27 @@
 "use client";
 
-import Image from "next/image";
-import { useRef, type ComponentType, type SVGProps } from "react";
-import { motion, MotionConfig, useScroll, useTransform } from "motion/react";
+import Image, { type StaticImageData } from "next/image";
+import { useRef, useState, type ComponentType, type SVGProps } from "react";
+import { AnimatePresence, motion, MotionConfig, useScroll, useTransform } from "motion/react";
 import logo from "@/public/logo.png";
-import { useT } from "../i18n";
+import occDashboard from "@/public/screens/occ-dashboard.jpg";
+import airportsData from "@/public/screens/airports-data.jpg";
+import feasibility from "@/public/screens/feasibility.jpg";
+import flightAnalysis from "@/public/screens/flight-analysis.jpg";
+import fuelStop from "@/public/screens/fuel-stop.jpg";
+import flightPlanning from "@/public/screens/flight-planning.jpg";
+import timeline from "@/public/screens/timeline.jpg";
+import dispatch from "@/public/screens/dispatch.jpg";
+import crewScheduling from "@/public/screens/crew-scheduling.jpg";
+import roster from "@/public/screens/roster.jpg";
+import irops from "@/public/screens/irops.jpg";
+import flightWatch from "@/public/screens/flight-watch.jpg";
+import lvp from "@/public/screens/lvp.jpg";
+import vigil from "@/public/screens/vigil.jpg";
+import camoManager from "@/public/screens/camo-manager.jpg";
+import sms from "@/public/screens/sms.jpg";
+import reports from "@/public/screens/reports.jpg";
+import { useT, type ScreenId } from "../i18n";
 import { Brand } from "../wordmark";
 import {
   Counter,
@@ -19,14 +36,11 @@ import {
   scaleIn,
   ScrollWords,
 } from "./reveal";
-import { AnalyticsMockup, DashboardMockup, FlightMapMockup, RosterMockup } from "./mockups";
 import {
   Chart,
   Gauge,
   Globe,
-  Headset,
   Medal,
-  Plane,
   Shield,
   ShieldCheck,
   Sliders,
@@ -39,14 +53,34 @@ type IconType = ComponentType<SVGProps<SVGSVGElement>>;
 
 const container = "relative mx-auto w-full max-w-[1200px] px-6 sm:px-10";
 
+/** Application screens taken from the NetPlus 2026 brochure. */
+const screens: Record<ScreenId, StaticImageData> = {
+  feasibility,
+  "flight-analysis": flightAnalysis,
+  "fuel-stop": fuelStop,
+  "flight-planning": flightPlanning,
+  timeline,
+  dispatch,
+  "crew-scheduling": crewScheduling,
+  roster,
+  irops,
+  "flight-watch": flightWatch,
+  lvp,
+  vigil,
+  "camo-manager": camoManager,
+  sms,
+  reports,
+};
+
 export function Sections() {
   return (
     <MotionConfig reducedMotion="user">
       <div className="relative overflow-x-clip bg-page text-ink">
         <Intro />
         <Expertise />
+        <DataSection />
         <Vision />
-        <Showcase />
+        <Tour />
         <Roles />
         <Contact />
         <Footer />
@@ -56,7 +90,7 @@ export function Sections() {
 }
 
 /* ------------------------------------------------------------------ */
-/* Intro: trusted partner + cinematic product panel                    */
+/* Intro: digital cockpit + the real OCC dashboard                     */
 /* ------------------------------------------------------------------ */
 
 function Intro() {
@@ -91,22 +125,30 @@ function Intro() {
       </div>
 
       <div ref={panel} className={`${container} mt-14 [perspective:1600px] lg:mt-20`}>
-        <motion.div
-          style={{ scale, rotateX, opacity }}
-          className="origin-bottom overflow-hidden rounded-[28px] border border-gold/25 bg-card shadow-[0_60px_140px_-40px_rgba(201,163,92,0.4)]"
-        >
-          <DashboardMockup />
-        </motion.div>
+        <motion.figure style={{ scale, rotateX, opacity }} className="origin-bottom">
+          <div className="overflow-hidden rounded-[28px] border border-gold/25 bg-[#0b1830] shadow-[0_60px_140px_-40px_rgba(201,163,92,0.4)]">
+            <Image
+              src={occDashboard}
+              alt={t.screenAlt}
+              placeholder="blur"
+              sizes="(max-width: 1200px) 100vw, 1120px"
+              className="h-auto w-full"
+            />
+          </div>
+          <figcaption className="mx-auto mt-5 max-w-2xl text-center text-[13px] leading-relaxed text-ink/55">
+            {t.caption}
+          </figcaption>
+        </motion.figure>
       </div>
     </section>
   );
 }
 
 /* ------------------------------------------------------------------ */
-/* Expertise: logo centrepiece, counter, feature grid                  */
+/* Expertise: the problem we solve, logo centrepiece, feature grid     */
 /* ------------------------------------------------------------------ */
 
-const featureIcons: IconType[] = [Wrench, Plane, Shield, Headset];
+const featureIcons: IconType[] = [Wrench, Shield, Globe, Gauge];
 
 function Expertise() {
   const t = useT().expertise;
@@ -123,10 +165,10 @@ function Expertise() {
       <Glow className="-right-40 top-40" />
       <div ref={ref} className={`${container} grid items-center gap-12 lg:grid-cols-[1fr_1.3fr_1fr]`}>
         <Reveal x={-40} y={0}>
-          <h2 className="font-display text-gold-gradient text-3xl font-medium leading-tight sm:text-4xl">
-            {t.title[0]}
+          <h2 className="font-display text-3xl font-medium leading-tight sm:text-4xl">
+            <span className="text-ink">{t.title[0]}</span>
             <br />
-            {t.title[1]}
+            <span className="text-gold-gradient">{t.title[1]}</span>
           </h2>
           <p className="mt-5 max-w-xs text-sm leading-relaxed text-ink/60">{t.body}</p>
         </Reveal>
@@ -155,7 +197,7 @@ function Expertise() {
 
         <Reveal x={40} y={0} className="lg:text-right">
           <p className="font-display text-gold-gradient text-6xl font-semibold tracking-tight sm:text-7xl">
-            <Counter to={360} suffix="°" />
+            <Counter to={23} />
           </p>
           <p className="font-display mt-2 text-xs font-semibold uppercase tracking-[0.3em] text-ink">{t.statLabel}</p>
           <p className="mt-4 text-sm leading-relaxed text-ink/60 lg:ml-auto lg:max-w-xs">{t.statBody}</p>
@@ -189,14 +231,76 @@ function Expertise() {
         </motion.ul>
 
         <Reveal>
-          <p className="font-display text-gold-gradient text-3xl font-medium sm:text-4xl">{t.worldA}</p>
-          <p className="font-serif text-4xl italic text-ink sm:text-5xl">{t.worldB}</p>
+          <p className="font-display text-gold-gradient text-2xl font-medium sm:text-3xl">{t.worldA}</p>
+          <p className="font-serif mt-1 text-4xl italic leading-tight text-ink sm:text-5xl">
+            <Brand text={t.worldB} />
+          </p>
           <p className="mt-8 text-sm leading-relaxed text-ink/60">
             <Brand text={t.p1} />
           </p>
-          <p className="mt-5 text-sm leading-relaxed text-ink/60">{t.p2}</p>
+          <p className="mt-5 text-sm leading-relaxed text-ink/60">
+            <Brand text={t.p2} />
+          </p>
         </Reveal>
       </div>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Data: built-in aviation reference data, with live counters          */
+/* ------------------------------------------------------------------ */
+
+function DataSection() {
+  const t = useT().data;
+  return (
+    <section id="data" className="relative scroll-mt-24 pb-28 lg:pb-36">
+      <Glow className="-left-40 top-20" />
+      <div className={`${container} grid items-center gap-14 lg:grid-cols-[1fr_1.15fr] lg:gap-16`}>
+        <div>
+          <Reveal>
+            <p className="font-display text-xs font-semibold uppercase tracking-[0.3em] text-accent">{t.eyebrow}</p>
+            <h2 className="mt-4 text-4xl leading-tight sm:text-5xl">
+              <span className="font-display block font-medium text-ink">{t.title[0]}</span>
+              <span className="font-serif block italic text-gold-gradient">{t.title[1]}</span>
+            </h2>
+            <p className="mt-6 max-w-md text-sm leading-relaxed text-ink/60">
+              <Brand text={t.body} />
+            </p>
+          </Reveal>
+          <motion.dl
+            className="mt-10 grid grid-cols-2 gap-x-6 gap-y-8 border-t border-ink/10 pt-8 sm:grid-cols-3"
+            variants={group(0.08)}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.3 }}
+          >
+            {t.stats.map(({ value, label }) => (
+              <motion.div key={label} variants={fadeUp}>
+                <dt className="sr-only">{label}</dt>
+                <dd className="font-display text-gold-gradient text-3xl font-semibold tracking-tight sm:text-[2rem]">
+                  <Counter to={value} />
+                </dd>
+                <dd className="mt-1 text-[12px] leading-snug text-ink/55">{label}</dd>
+              </motion.div>
+            ))}
+          </motion.dl>
+        </div>
+
+        <Reveal x={40} y={0}>
+          <figure>
+            <motion.div
+              whileHover={{ y: -6 }}
+              transition={{ duration: 0.4, ease }}
+              className="overflow-hidden rounded-2xl border border-gold/25 bg-[#0b1830] shadow-[0_40px_100px_-40px_rgba(201,163,92,0.45)]"
+            >
+              <Image src={airportsData} alt={t.screenAlt} placeholder="blur" sizes="(max-width: 1024px) 100vw, 620px" className="h-auto w-full" />
+            </motion.div>
+            <figcaption className="mt-4 text-[13px] leading-relaxed text-ink/55">{t.caption}</figcaption>
+          </figure>
+        </Reveal>
+      </div>
+      <p className={`${container} mt-10 font-mono text-[10px] tracking-wide text-ink/35`}>{t.note}</p>
     </section>
   );
 }
@@ -205,7 +309,7 @@ function Expertise() {
 /* Vision: scroll-lit statement, rising horizon, four pillars          */
 /* ------------------------------------------------------------------ */
 
-const pillarIcons: IconType[] = [Medal, Sliders, ShieldCheck, Globe];
+const pillarIcons: IconType[] = [Medal, Globe, Sliders, ShieldCheck];
 
 function Vision() {
   const t = useT().vision;
@@ -216,7 +320,7 @@ function Vision() {
   const arc = useTransform(scrollYProgress, [0.2, 0.55], [0, 1]);
 
   return (
-    <section id="vision" className="relative scroll-mt-24 pt-20 lg:pt-28">
+    <section id="vision" className="relative scroll-mt-24 pt-4 lg:pt-8">
       <div className={container}>
         {/* key: restart the word-by-word reveal cleanly when the language changes */}
         <ScrollWords
@@ -284,14 +388,18 @@ function Vision() {
 }
 
 /* ------------------------------------------------------------------ */
-/* Showcase: three module cards                                        */
+/* Tour: one flight from request to closure, real application screens  */
 /* ------------------------------------------------------------------ */
 
-const visuals = [FlightMapMockup, RosterMockup, AnalyticsMockup];
+function Tour() {
+  const t = useT().tour;
+  const [index, setIndex] = useState(0);
+  const items = t.items;
+  const item = items[index];
+  const stageItems = items.map((it, i) => ({ ...it, i })).filter((it) => it.stage === item.stage);
+  const go = (i: number) => setIndex((i + items.length) % items.length);
+  const pad = (n: number) => String(n).padStart(2, "0");
 
-function Showcase() {
-  const t = useT().showcase;
-  const learnMore = useT().learnMore;
   return (
     <section id="modules" className="relative scroll-mt-24 py-28 lg:py-36">
       <Glow className="left-1/2 top-20 -translate-x-1/2" />
@@ -301,40 +409,152 @@ function Showcase() {
             <span className="text-gold-gradient">{t.a}</span>{" "}
             <span className="font-serif italic text-ink">{t.b}</span>
           </h2>
-          <p className="mt-5 text-sm leading-relaxed text-ink/60">{t.body}</p>
+          <p className="mt-5 text-sm leading-relaxed text-ink/60">
+            <Brand text={t.body} />
+          </p>
         </Reveal>
 
-        <motion.ul
-          className="mt-16 grid gap-10 md:grid-cols-3 md:gap-7"
-          variants={group(0.18)}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, amount: 0.2 }}
-        >
-          {t.cards.map(({ title, text }, i) => {
-            const Visual = visuals[i];
-            return (
-              <motion.li key={i} variants={fadeUp} className="group">
+        {/* Stage stepper */}
+        <Reveal delay={0.1}>
+          <ol className="relative mx-auto mt-14 flex max-w-4xl snap-x gap-2 overflow-x-auto pb-2 [scrollbar-width:none] sm:justify-between sm:overflow-visible">
+            <span aria-hidden className="absolute inset-x-8 top-[17px] hidden h-px bg-gradient-to-r from-gold/10 via-gold/50 to-gold/10 sm:block" />
+            {t.stages.map((stage, s) => {
+              const first = items.findIndex((it) => it.stage === s);
+              const active = item.stage === s;
+              return (
+                <li key={stage} className="relative shrink-0 snap-start">
+                  <button
+                    type="button"
+                    onClick={() => setIndex(first)}
+                    aria-current={active ? "step" : undefined}
+                    className="group flex flex-col items-center gap-2 px-2 text-center"
+                  >
+                    <span
+                      className={`font-display flex size-9 items-center justify-center rounded-full border text-xs font-bold transition-all duration-300 ${
+                        active
+                          ? "border-gold bg-gold text-navy shadow-[0_0_24px_-2px_rgba(230,201,141,0.8)]"
+                          : "border-gold/50 bg-page text-accent group-hover:border-gold"
+                      }`}
+                    >
+                      {s + 1}
+                    </span>
+                    <span
+                      className={`font-display text-[10px] font-semibold uppercase tracking-[0.18em] transition-colors ${
+                        active ? "text-ink" : "text-ink/50 group-hover:text-ink/80"
+                      }`}
+                    >
+                      {stage}
+                    </span>
+                  </button>
+                </li>
+              );
+            })}
+          </ol>
+        </Reveal>
+
+        <div className="mt-12 grid items-start gap-10 lg:grid-cols-[1.6fr_1fr] lg:gap-12">
+          {/* Screen */}
+          <div className="relative">
+            <div className="relative aspect-[16/10]">
+              <AnimatePresence mode="popLayout" initial={false}>
                 <motion.div
-                  whileHover={{ y: -8 }}
-                  transition={{ duration: 0.4, ease }}
-                  className="relative aspect-[4/3.3] overflow-hidden rounded-2xl border border-ink/10 shadow-[0_30px_60px_-30px_rgba(0,0,0,0.6)] transition-colors duration-500 group-hover:border-gold/50"
+                  key={item.screen}
+                  className="absolute inset-0"
+                  initial={{ opacity: 0, scale: 1.03, filter: "blur(6px)" }}
+                  animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+                  exit={{ opacity: 0, scale: 0.98, filter: "blur(6px)" }}
+                  transition={{ duration: 0.5, ease }}
                 >
-                  <Visual />
+                  <Image
+                    src={screens[item.screen]}
+                    alt={item.alt}
+                    placeholder="blur"
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 700px"
+                    className="object-contain drop-shadow-[0_30px_45px_rgba(11,24,48,0.45)]"
+                  />
                 </motion.div>
-                <h3 className="font-display text-gold-gradient mt-6 text-base font-semibold leading-snug">
-                  {title[0]}
-                  <br />
-                  {title[1]}
+              </AnimatePresence>
+            </div>
+            <div className="mt-4 flex items-center justify-between gap-4">
+              <p className="font-mono text-[10px] tracking-wide text-ink/35">{t.note}</p>
+              <div className="flex shrink-0 items-center gap-2">
+                <span className="font-mono mr-1 text-[11px] text-ink/50">
+                  {pad(index + 1)} / {pad(items.length)}
+                </span>
+                <ArrowButton label={t.previous} onClick={() => go(index - 1)} dir="left" />
+                <ArrowButton label={t.next} onClick={() => go(index + 1)} dir="right" />
+              </div>
+            </div>
+          </div>
+
+          {/* Copy */}
+          <div className="min-h-[420px]">
+            {stageItems.length > 1 && (
+              <div className="mb-6 flex flex-wrap gap-2">
+                {stageItems.map((it) => (
+                  <button
+                    key={it.screen}
+                    type="button"
+                    onClick={() => setIndex(it.i)}
+                    className={`font-display rounded-full border px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] transition-colors ${
+                      it.i === index
+                        ? "border-gold bg-gold/15 text-accent"
+                        : "border-ink/15 text-ink/55 hover:border-gold/60 hover:text-ink"
+                    }`}
+                  >
+                    {it.module.split(" · ").slice(-1)[0]}
+                  </button>
+                ))}
+              </div>
+            )}
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={item.screen}
+                initial={{ opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.4, ease }}
+              >
+                <p className="font-display text-[11px] font-semibold uppercase tracking-[0.28em] text-accent">
+                  {t.stageLabel} {item.stage + 1} · <Brand text={item.module} />
+                </p>
+                <h3 className="mt-4 text-3xl leading-tight sm:text-[2.1rem]">
+                  <span className="font-display block font-semibold text-ink">{item.title[0]}</span>
+                  <span className="font-serif block italic text-gold-gradient">{item.title[1]}</span>
                 </h3>
-                <p className="mt-3 text-[13px] leading-relaxed text-ink/55">{text}</p>
-                <LearnMore>{learnMore}</LearnMore>
-              </motion.li>
-            );
-          })}
-        </motion.ul>
+                <p className="mt-5 text-sm leading-relaxed text-ink/65">
+                  <Brand text={item.text} />
+                </p>
+                <ul className="mt-6 space-y-3">
+                  {item.bullets.map((b) => (
+                    <li key={b} className="flex gap-3 text-[13px] leading-relaxed text-ink/60">
+                      <span aria-hidden className="mt-[7px] size-1.5 shrink-0 rotate-45 bg-gold" />
+                      <span>{b}</span>
+                    </li>
+                  ))}
+                </ul>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+        </div>
       </div>
     </section>
+  );
+}
+
+function ArrowButton({ label, onClick, dir }: { label: string; onClick: () => void; dir: "left" | "right" }) {
+  return (
+    <button
+      type="button"
+      aria-label={label}
+      onClick={onClick}
+      className="flex size-9 items-center justify-center rounded-full border border-gold/40 text-accent transition-colors hover:bg-gold hover:text-navy"
+    >
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className="size-4">
+        {dir === "left" ? <path d="M15 5l-7 7 7 7" /> : <path d="M9 5l7 7-7 7" />}
+      </svg>
+    </button>
   );
 }
 
