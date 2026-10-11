@@ -9,13 +9,13 @@ import feasibility from "@/public/screens/feasibility.jpg";
 import flightAnalysis from "@/public/screens/flight-analysis.jpg";
 import fuelStop from "@/public/screens/fuel-stop.jpg";
 import flightPlanning from "@/public/screens/flight-planning.jpg";
-import timeline from "@/public/screens/timeline.jpg";
+import timeline from "@/public/screens/timeline.png";
 import dispatch from "@/public/screens/dispatch.jpg";
 import crewScheduling from "@/public/screens/crew-scheduling.jpg";
 import roster from "@/public/screens/roster.jpg";
 import irops from "@/public/screens/irops.jpg";
 import flightWatch from "@/public/screens/flight-watch.jpg";
-import lvp from "@/public/screens/lvp.jpg";
+import lvp from "@/public/screens/lvp.png";
 import vigil from "@/public/screens/vigil.jpg";
 import camoManager from "@/public/screens/camo-manager.jpg";
 import sms from "@/public/screens/sms.jpg";
@@ -449,7 +449,6 @@ function Tour() {
               </AnimatePresence>
             </div>
             <div className="mt-4 flex items-center justify-between gap-4">
-              <p className="font-mono text-[10px] tracking-wide text-ink/35">{t.note}</p>
               <div className="flex shrink-0 items-center gap-2">
                 <span className="font-mono mr-1 text-[11px] text-ink/50">
                   {pad(index + 1)} / {pad(items.length)}
